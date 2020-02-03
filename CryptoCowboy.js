@@ -69,6 +69,13 @@ var coAsset = ``;
 
 cliArgument.registerOption(`algorithm`, `config`, async (iP, pA, cA) => 
 {
+	/*
+	const tableAlgorithm = await database.readEntireTable(`algorithm`);
+	log.info(`Overwriting old config data`);
+	log.debug(`Table Algorithm: `);
+	log.debug(tableAlgorithm);
+	*/
+
 	database.removeTable(`algorithm`);
 
 	await database.createTable(`algorithm`, [`inflectionPoint`, `primeasset`, `coasset`]);
@@ -122,9 +129,16 @@ cliArgument.registerFlag(`S`, () =>
 
 cliArgument.execute();
 
+function sleep(ms) 
+{
+	return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 async function main()
 {
 	log.info(`Welcome to CryptoCowboy ${version}`);
+
+	await sleep(250);
 
 	const listOfWallets = await database.read(`wallet`, [`id`, `address`, `secret`]);
 	log.dev(`${listOfWallets.length} wallets found`);
@@ -190,6 +204,26 @@ async function main()
 		process.exitCode = 1;
 	}
 
+	const tableAlgorithm = await database.readEntireTable(`algorithm`);
+	log.info(`Overwriting old config data`);
+	log.debug(`Table Algorithm: `);
+	log.debug(tableAlgorithm);
+
+	if(inflectionPoint == 0 && tableAlgorithm[0])
+	{
+		inflectionPoint = tableAlgorithm[0].inflectionPoint;
+	}
+
+	if(primeAsset == ``)
+	{
+		primeAsset = tableAlgorithm[0].primeasset;
+	}
+
+	if(coAsset == ``)
+	{
+		coAsset = tableAlgorithm[0].coasset;
+	}
+
 	const algorithm = new Algorithm(myWallet);
 	algorithm.inflectionPoint = inflectionPoint;
 
@@ -228,7 +262,6 @@ async function main()
 		await algorithm.start();
 	}
 }
-
 main().catch((error) => 
 {
 	log.error(`An error has occured in main!`);
