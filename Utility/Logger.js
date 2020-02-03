@@ -283,3 +283,4 @@ export default class Logger
 }
 
 const log = new Logger(`Logger`);
+//log.testLoggers();
