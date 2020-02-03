@@ -1,8 +1,8 @@
 node_modules
 database
-#.eslintrc.json
-#CryptoCowboy.code-workspace
-#.vscode
+.eslintrc.json
+CryptoCowboy.code-workspace
+.vscode
 ssl
 keys
 logs
