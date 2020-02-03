@@ -1,0 +1,38 @@
+{
+	// Use IntelliSense to learn about possible attributes.
+	// Hover to view descriptions of existing attributes.
+	// For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+	"version": "0.2.0",
+	"configurations": [
+		{
+			"type": "node",
+			"request": "launch",
+			"name": "Launch Program",
+			"program": "${workspaceFolder}\\CryptoCowboy.js",
+			"runtimeArgs": ["--experimental-modules", "--experimental-json-modules"],
+			"args": ["--algorithm", "config", "60", "USD", "XRP", "-DD"],
+			"trace": true,
+			"restart": true,
+			"skipFiles": [
+				"**/node_modules/**/*.js",
+				"<node_internals>/**/*.js"
+			  ],
+			  "outputCapture": "console"
+		},
+		{
+			"type": "node",
+			"request": "launch",
+			"name": "Clear Orders",
+			"program": "${workspaceFolder}\\CryptoCowboy.js",
+			"runtimeArgs": ["--experimental-modules", "--experimental-json-modules"],
+			"args": ["--algorithm", "config", "60", "USD", "XRP", "-DD", "--wallet", "clearOrders"],
+			"trace": true,
+			"restart": true,
+			"skipFiles": [
+				"**/node_modules/**/*.js",
+				"<node_internals>/**/*.js"
+			  ],
+			  "outputCapture": "std"
+		}
+	]
+}
