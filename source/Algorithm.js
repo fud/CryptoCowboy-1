@@ -11,6 +11,11 @@ import API from "./Utility/API.js";
 const algorithm_API = new API(`algorithm`);
 export { algorithm_API };
 
+//	Remove DB later
+import Database from './Database.js';
+const database = new Database();
+
+
 const _id = new Map();
 const _orders = new Map();
 
@@ -110,6 +115,7 @@ export default class Algorithm
 			else
 			{
 				_inflectionPoint.set(this, value);
+				database.updateData(`algorithm`, `inflectionPoint`, value);
 			}
 		}
 	}

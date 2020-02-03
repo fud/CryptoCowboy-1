@@ -72,20 +72,20 @@ function generateResponseMessage(destination, command, data)
 	return JSON.stringify(request);
 }
 
+/*
 const secureContext =
 {
 	cert: fs.readFileSync(`./ssl/cryptocowboy_tech.crt`),
 	ca: fs.readFileSync(`./ssl/cryptocowboy_tech.ca-bundle`),
 	key: fs.readFileSync(`./ssl/cryptocowboy_tech.key`)
 };
+*/
 
-/*
 const secureContext =
 {
 	key: fs.readFileSync(`./keys/privateKey.pem`),
 	cert: fs.readFileSync(`./keys/certificate.pem`),
 };
-*/
 
 //	Redirect http traffic to https
 http.createServer(function (request, response)
