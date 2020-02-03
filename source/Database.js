@@ -52,8 +52,10 @@ export default class Database
 				resolve(result);
 			});
 
-			database.run.apply(database, args);
-
+			database.serialize(() => 
+			{
+				database.run.apply(database, args);
+			});
 		}).catch((error) => 
 		{
 			console.error(error);
@@ -145,13 +147,15 @@ export default class Database
 		return await this.execute(query, rowValues);
 	}
 
-	removeTable(table)
+	async removeTable(table)
 	{
 		const query = `DROP TABLE IF EXISTS ${table}`;
-		database.serialize(() => 
-		{
-			database.run(query);
-		});
+		//database.serialize(() => 
+		//{
+		//	database.run(query);
+		//});
+
+		await this.execute(query);
 	}
 
 	async renameTable(oldTable, newTable)
@@ -186,7 +190,7 @@ export default class Database
 
 		await this.createTable(`${table}Temp`, rowKeys);
 		await this.execute(`insert into ${table}Temp(${rowKeys}) select ${oldRowKeys} from ${table}`);
-		this.removeTable(`${table}`);
+		await this.removeTable(`${table}`);
 		await this.renameTable(`${table}Temp`, table);
 	}
 
@@ -203,24 +207,18 @@ export default class Database
 
 
 
-	updateData(table, setColumn, setValue, whereColumn, whereValue)
+	async updateData(table, setColumn, setValue, whereColumn, whereValue)
 	{
-		return this.execute(() => 
+		var query = null;
+		if (whereColumn == null || whereValue == null)
 		{
-			var query = null;
-			if (whereColumn == null || whereValue == null)
-			{
-				query = `UPDATE ${table} SET ${setColumn} = '${setValue}'`;
-			}
-			else
-			{
-				query = `UPDATE ${table} SET ${setColumn} = "${setValue}" WHERE ${whereColumn} = "${whereValue}"`;
-			}
-
-			console.log(query);
-
-			database.run(query);
-		});
+			query = `UPDATE ${table} SET ${setColumn} = '${setValue}'`;
+		}
+		else
+		{
+			query = `UPDATE ${table} SET ${setColumn} = "${setValue}" WHERE ${whereColumn} = "${whereValue}"`;
+		}
+		await this.execute(query);
 	}
 
 
