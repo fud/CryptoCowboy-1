@@ -122,8 +122,6 @@ cliArgument.registerFlag(`S`, () =>
 
 cliArgument.execute();
 
-//log.testLoggers();
-
 async function main()
 {
 	log.info(`Welcome to CryptoCowboy ${version}`);
