@@ -15,10 +15,8 @@ export { algorithm_API };
 import Database from './Database.js';
 const database = new Database();
 
-
 const _id = new Map();
 const _orders = new Map();
-
 
 /**
  * @type {Map<Algorithm, import('./Wallet.js') | import('./XRPL.Wallet.js')>}
@@ -29,6 +27,7 @@ const _buyOrder = new Map();
 const _sellOrder = new Map();
 
 const _inflectionPoint = new Map();
+const _rangePercentage = new Map();
 
 export default class Algorithm
 {
@@ -48,8 +47,6 @@ export default class Algorithm
 		_wallet.set(this, wallet);
 		_orders.set(this, []);
 		_inflectionPoint.set(this, null);
-
-		this.rangePercentage = 3;
 
 		this.rangePercentageLow = 1;
 		this.rangePercentageHigh = 10;
@@ -75,6 +72,37 @@ export default class Algorithm
 		 */
 		this.coAsset = null;
 	}
+
+	get rangePercentage()
+	{
+		const rp = _rangePercentage.get(this);
+
+		return rp;
+	}
+
+	//	TODO: Error checking
+	set rangePercentage(value)
+	{
+		if (isNaN(value))
+		{
+			log.dev(this.rangePercentage);
+			throw new Error(`Invalid Range percentage`);
+		}
+		else
+		{
+			if (value < 0)
+			{
+				log.dev(this.rangePercentage);
+				throw new Error(`Invalid Range percentage`);
+			}
+			else
+			{
+				_rangePercentage.set(this, value);
+				database.updateData(`algorithm`, `rangePercentage`, value);
+			}
+		}
+	}
+
 
 	get inflectionPoint()
 	{

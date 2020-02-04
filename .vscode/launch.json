@@ -9,8 +9,8 @@
 			"request": "launch",
 			"name": "Launch Program",
 			"program": "${workspaceFolder}\\CryptoCowboy.js",
-			"runtimeArgs": ["--experimental-modules", "--experimental-json-modules"],
-			"args": ["--algorithm", "config", "60", "USD", "XRP", "-DD"],
+			"runtimeArgs": ["--experimental-json-modules"],
+			"args": ["-V", "-D", "-DD", "-S"],
 			"trace": true,
 			"restart": true,
 			"skipFiles": [

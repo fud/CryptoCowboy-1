@@ -129,6 +129,36 @@ export default class Database
 		});
 	}
 
+	async columnExists(table, column)
+	{
+		const tableData = await this.readEntireTable(table);
+		if(tableData[column])
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+
+	async addColumn(table, column)
+	{
+		try 
+		{
+			await this.columnExists(table, column);
+			console.log(`Column ${column} exists in table ${table}`);
+			const query = `ALTER TABLE ${table} ADD COLUMN ${column}`;
+			await this.execute(query);
+			return true;
+		} 
+		catch (error) 
+		{
+			console.log(`Column ${column} does not exist in table ${table}, adding it.`);
+			return false;
+		}
+	}
+
 	//	TODO: prevent overwrites
 	async write(table, rowObject)
 	{
