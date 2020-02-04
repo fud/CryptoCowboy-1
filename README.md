@@ -1,4 +1,4 @@
-# CryptoCowboy [v2.0.0-alpha.9]
+# CryptoCowboy [v2.0.0-alpha.10]
 
 This software is in an early pre-release form and is **not recomended for use**.
 Many features are not fully implemented but will be added within the coming weeks/months.
@@ -15,7 +15,7 @@ The following are known limitations which are being addressed.
 * The web interface is disabled for development but is being rolled out.
 
 ## Running
-To run CryptoCowboy v2.0.0-alpha.9 Using the temporary limited CLI:
+To run CryptoCowboy v2.0.0-alpha.10 Using the temporary limited CLI:
 
 * *node --experimental-modules --experimental-json-modules CryptoCowboy.js [options]*
   * Where options uses the following formats:
