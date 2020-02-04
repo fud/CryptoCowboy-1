@@ -139,6 +139,7 @@ async function main()
 	log.info(`Welcome to CryptoCowboy ${version}`);
 
 	await sleep(250);
+	await sleep(2500);	//	For debugging
 
 	const listOfWallets = await database.read(`wallet`, [`id`, `address`, `secret`]);
 	log.dev(`${listOfWallets.length} wallets found`);
@@ -213,6 +214,37 @@ async function main()
 	{
 		inflectionPoint = tableAlgorithm[0].inflectionPoint;
 	}
+
+	let rp = 0;
+
+	await database.read(`algorithm`, `rangePercentage`).then((data) => 
+	{
+		console.log(`read`);
+		rp = data;
+		console.log(data);
+		return true;
+	}).catch(async (error) => 
+	{
+		console.log(`read fail`);
+		console.log(`Empty row`, error);
+	});
+
+	if(!rp)
+	{
+		await database.addColumn(`algorithm`, `rangePercentage`).then(async () => 
+		{
+			console.log(`add col`);
+			return database.updateData(`algorithm`, `rangePercentage`, `3`);
+		}).catch(() => 
+		{
+			console.log(`catch col`);
+			console.log(`error`);
+		});
+	}
+
+
+
+
 
 	if(primeAsset == ``)
 	{
