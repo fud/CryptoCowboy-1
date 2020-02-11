@@ -220,7 +220,7 @@ async function main()
 	await database.read(`algorithm`, `rangePercentage`).then((data) => 
 	{
 		console.log(`read`);
-		rp = data;
+		rp = data[0].rangePercentage;
 		console.log(data);
 		return true;
 	}).catch(async (error) => 
@@ -231,6 +231,7 @@ async function main()
 
 	if(!rp)
 	{
+		rp = 3;
 		await database.addColumn(`algorithm`, `rangePercentage`).then(async () => 
 		{
 			console.log(`add col`);
@@ -241,7 +242,6 @@ async function main()
 			console.log(`error`);
 		});
 	}
-
 
 
 
@@ -258,6 +258,7 @@ async function main()
 
 	const algorithm = new Algorithm(myWallet);
 	algorithm.inflectionPoint = inflectionPoint;
+	algorithm.rangePercentage = rp;
 
 	let primeAssetsSet = false;
 	let coAssetsSet = false;

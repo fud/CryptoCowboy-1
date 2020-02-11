@@ -48,6 +48,7 @@ export default class Algorithm
 		_orders.set(this, []);
 		_inflectionPoint.set(this, null);
 
+		_rangePercentage.set(this, 3);
 		this.rangePercentageLow = 1;
 		this.rangePercentageHigh = 10;
 
