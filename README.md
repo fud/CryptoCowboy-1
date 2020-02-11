@@ -1,4 +1,4 @@
-# CryptoCowboy [v2.0.0-alpha.8]
+# CryptoCowboy [v2.0.0-alpha.10]
 
 This software is in an early pre-release form and is **not recomended for use**.
 Many features are not fully implemented but will be added within the coming weeks/months.
@@ -15,7 +15,7 @@ The following are known limitations which are being addressed.
 * The web interface is disabled for development but is being rolled out.
 
 ## Running
-To run CryptoCowboy v2.0.0-alpha.8 Using the temporary limited CLI:
+To run CryptoCowboy v2.0.0-alpha.10 Using the temporary limited CLI:
 
 * *node --experimental-modules --experimental-json-modules CryptoCowboy.js [options]*
   * Where options uses the following formats:
@@ -61,3 +61,6 @@ To calculate the inflectionPoint, it's the number of 'coAsset' you want to keep 
 If you're unfamiliar with how the algorithm works and have not used the original version, I advise either waiting until a more user friendly version is released or asking for help on our Discord channel.
 
 I will be pushing weekly updates so stay tuned for more.
+
+### Patch Notes
+As of Alpha-10, you no longer need to manually pass the 'inflectionPoint' variable everytime the program is run. It only needs to be used once.
