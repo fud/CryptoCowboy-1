@@ -29,6 +29,8 @@ const _sellOrder = new Map();
 const _inflectionPoint = new Map();
 const _rangePercentage = new Map();
 
+const mana = false;
+
 export default class Algorithm
 {
 	constructor(wallet, id)
@@ -53,7 +55,7 @@ export default class Algorithm
 		this.rangePercentageHigh = 10;
 
 		//86400 seconds in a day
-		setInterval(() => 
+		setInterval(() =>
 		{
 			if (parseFloat(this.rangePercentage) > parseFloat(this.rangePercentageLow))
 			{
@@ -62,13 +64,13 @@ export default class Algorithm
 		}, 3600000);
 
 		/**
-		 * 
+		 *
 		 * @type {import("ripple-lib/dist/npm/ledger/balances").Balance}
 		 */
 		this.primeAsset = null;
 
 		/**
-		 * 
+		 *
 		 * @type {import("ripple-lib/dist/npm/ledger/balances").Balance}
 		 */
 		this.coAsset = null;
@@ -221,7 +223,7 @@ export default class Algorithm
 			log.dev(this.buyOrder);
 
 
-			const buyTransaction = await wallet.isOrderOpen(this.buyOrder).catch((error) => 
+			const buyTransaction = await wallet.isOrderOpen(this.buyOrder).catch((error) =>
 			{
 				log.error(error);
 			});
@@ -235,7 +237,7 @@ export default class Algorithm
 		{
 			log.dev(this.sellOrder);
 
-			const sellTransaction = await wallet.isOrderOpen(this.sellOrder).catch((error) => 
+			const sellTransaction = await wallet.isOrderOpen(this.sellOrder).catch((error) =>
 			{
 				log.error(error);
 			});
@@ -304,7 +306,15 @@ export default class Algorithm
 
 		const wallet = _wallet.get(this);
 
-
+		if(this.range.number * 1.10  > this.primeAsset.value)
+		{
+			mana = false;
+			return;
+		}
+		else
+		{
+			mana = true;
+		}
 
 		return await wallet.buy(buy, cost);
 	}
@@ -342,12 +352,17 @@ export default class Algorithm
 
 	async start()
 	{
-		const openOrderCount = await this.getOpenOrderCount().catch((error) => 
+		const openOrderCount = await this.getOpenOrderCount().catch((error) =>
 		{
 			log.error(error);
 		});
 
 		await this.updateQuantity();
+
+		if(openOrderCount == 1 && !mana)
+		{
+			openOrderCount = 2;
+		}
 
 		switch (openOrderCount)
 		{
@@ -355,14 +370,14 @@ export default class Algorithm
 			log.verbose(`We need to place two orders`);
 			log.verbose(`buy...`);
 
-			this.buyOrder = await this.buy().catch((error) => 
+			this.buyOrder = await this.buy().catch((error) =>
 			{
 				log.error(`Error Placing Buy Order`);
 				log.error(error);
 			});
 
 			log.verbose(`sell...`);
-			this.sellOrder = await this.sell().catch((error) => 
+			this.sellOrder = await this.sell().catch((error) =>
 			{
 				log.error(`Error Placing Sell Order`);
 				log.error(error);
@@ -397,7 +412,7 @@ export default class Algorithm
 				}
 			}
 
-			await this.cancelOrders().catch((error) => 
+			await this.cancelOrders().catch((error) =>
 			{
 				log.error(`Error Canceling orders`);
 				log.error(error);
@@ -412,7 +427,7 @@ export default class Algorithm
 			break;
 		}
 
-		setTimeout(() => 
+		setTimeout(() =>
 		{
 			this.start();
 		}, 60000);
@@ -439,7 +454,7 @@ configureCommand.addParameter(`id`, `Nickname for this algorithm instance`, `str
 configureCommand.addParameter(`walletID`, `Name of the wallet to link algorithm to`, `string`, `My XRPL Wallet`);
 configureCommand.addParameter(`primeAsset`, `Main currency`, `string`, `USD`);
 configureCommand.addParameter(`coAsset`, `Complementary Currency`, `string`, `XRP`);
-configureCommand.setAction(async (data) => 
+configureCommand.setAction(async (data) =>
 {
 	console.log(`Algorithm data `, data);
 
