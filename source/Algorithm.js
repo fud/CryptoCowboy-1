@@ -49,7 +49,7 @@ export default class Algorithm
 		_inflectionPoint.set(this, null);
 
 		_rangePercentage.set(this, 3);
-		this.rangePercentageLow = 1;
+		this.rangePercentageLow = 2;
 		this.rangePercentageHigh = 10;
 
 		//86400 seconds in a day
