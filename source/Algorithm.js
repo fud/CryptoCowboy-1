@@ -35,8 +35,6 @@ export default class Algorithm
 {
 	constructor(wallet, id)
 	{
-		//log.debug(`Algorithm constructor being called`);
-
 		if (id)
 		{
 			_id.set(this, id);
