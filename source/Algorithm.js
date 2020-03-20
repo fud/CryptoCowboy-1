@@ -355,11 +355,6 @@ export default class Algorithm
 
 		await this.updateQuantity();
 
-		if(openOrderCount == 1 && !mana)
-		{
-			openOrderCount = 2;
-		}
-
 		switch (openOrderCount)
 		{
 			case (0):
