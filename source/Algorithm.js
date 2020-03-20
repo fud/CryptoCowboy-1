@@ -29,14 +29,11 @@ const _sellOrder = new Map();
 const _inflectionPoint = new Map();
 const _rangePercentage = new Map();
 
-const mana = false;
 
 export default class Algorithm
 {
 	constructor(wallet, id)
 	{
-		//log.debug(`Algorithm constructor being called`);
-
 		if (id)
 		{
 			_id.set(this, id);
@@ -51,8 +48,10 @@ export default class Algorithm
 		_inflectionPoint.set(this, null);
 
 		_rangePercentage.set(this, 3);
-		this.rangePercentageLow = 1;
+		this.rangePercentageLow = 2.25;
 		this.rangePercentageHigh = 10;
+
+		this.asymmetricOrderPlaced = false;
 
 		//86400 seconds in a day
 		setInterval(() =>
@@ -149,6 +148,13 @@ export default class Algorithm
 				database.updateData(`algorithm`, `inflectionPoint`, value);
 			}
 		}
+	}
+
+	get lowLiquidity()
+	{
+		const bufferedRange = this.range.number * 1.05;
+		const result = (bufferedRange > this.primeAsset.value);
+		return result;
 	}
 
 	get range()
@@ -306,16 +312,6 @@ export default class Algorithm
 
 		const wallet = _wallet.get(this);
 
-		if(this.range.number * 1.10  > this.primeAsset.value)
-		{
-			mana = false;
-			return;
-		}
-		else
-		{
-			mana = true;
-		}
-
 		return await wallet.buy(buy, cost);
 	}
 
@@ -366,65 +362,82 @@ export default class Algorithm
 
 		switch (openOrderCount)
 		{
-		case (0):
-			log.verbose(`We need to place two orders`);
-			log.verbose(`buy...`);
+			case (0):
+				log.verbose(`We need to place two orders`);
 
-			this.buyOrder = await this.buy().catch((error) =>
-			{
-				log.error(`Error Placing Buy Order`);
-				log.error(error);
-			});
-
-			log.verbose(`sell...`);
-			this.sellOrder = await this.sell().catch((error) =>
-			{
-				log.error(`Error Placing Sell Order`);
-				log.error(error);
-			});
-
-			break;
-		case (1):
-			log.info(`A trade executed, cancel outstanding orders`);
-
-			if (isNaN(this.inflectionPoint) || isNaN((this.range.number * (this.rangePercentage / 100.00) * 0.75)))
-			{
-				log.dev(`IP NAN`);
-			}
-			else
-			{
-				log.dev(`Changing this.inflectionPoint: ${this.inflectionPoint}`);
-				this.inflectionPoint = parseFloat(this.inflectionPoint) + parseFloat((this.range.number * (this.rangePercentage / 100.00) * 0.75));
-				log.dev(`To new value this.inflectionPoint: ${this.inflectionPoint}`);
-			}
-
-			if (isNaN(this.rangePercentage) || isNaN(this.rangePercentageHigh) || isNaN((this.rangePercentageHigh - this.rangePercentage) / 10.00))
-			{
-				log.dev(`RPH NAN`);
-			}
-			else
-			{
-				if (this.rangePercentage < this.rangePercentageHigh)
+				log.verbose(`sell...`);
+				this.sellOrder = await this.sell().catch((error) =>
 				{
-					log.dev(`this.rangePercentage: ${this.rangePercentage}`);
-					this.rangePercentage = parseFloat(this.rangePercentage) + parseFloat(((this.rangePercentageHigh - this.rangePercentage) / 10.00));
-					log.dev(`To new value this.rangePercentage: ${this.rangePercentage}`);
-				}
-			}
+					log.error(`Error Placing Sell Order`);
+					log.error(error);
+				});
 
-			await this.cancelOrders().catch((error) =>
-			{
-				log.error(`Error Canceling orders`);
-				log.error(error);
-			});
-			break;
-		case (2):
-			log.debug(`Waiting for transaction to occur. No action to perform`);
-			break;
-		default:
-			log.error(`Error: This state should never occur.`);
-			this.stop();
-			break;
+				if(this.lowLiquidity)
+				{
+					log.debug("Asymmetric order: Not enough liquidity - Omiting buy order.");
+					this.asymmetricOrderPlaced = true;
+				}
+				else
+				{
+					log.verbose(`buy...`);
+					this.buyOrder = await this.buy().catch((error) =>
+					{
+						log.error(`Error Placing Buy Order`);
+						log.error(error);
+					});
+					this.asymmetricOrderPlaced = false;
+				}
+
+				break;
+			case (1):
+
+				if(this.asymmetricOrderPlaced)
+				{
+					log.info(`Detected asymmetric order. Nothing to do for now.`);
+					break;
+				}
+
+				log.info(`A trade executed, cancel outstanding orders`);
+				log.debug(`It's possible that you placed a previous asymmetric order and restarted the program. Resetting orders anyways.`);
+
+				if (isNaN(this.inflectionPoint) || isNaN((this.range.number * (this.rangePercentage / 100.00) * 0.50)))
+				{
+					log.dev(`IP NAN`);
+				}
+				else
+				{
+					log.dev(`Changing this.inflectionPoint: ${this.inflectionPoint}`);
+					this.inflectionPoint = parseFloat(this.inflectionPoint) + parseFloat((this.range.number * (this.rangePercentage / 100.00) * 0.50));
+					log.dev(`To new value this.inflectionPoint: ${this.inflectionPoint}`);
+				}
+
+				if (isNaN(this.rangePercentage) || isNaN(this.rangePercentageHigh) || isNaN((this.rangePercentageHigh - this.rangePercentage) / 10.00))
+				{
+					log.dev(`RPH NAN`);
+				}
+				else
+				{
+					if (this.rangePercentage < this.rangePercentageHigh)
+					{
+						log.dev(`this.rangePercentage: ${this.rangePercentage}`);
+						this.rangePercentage = parseFloat(this.rangePercentage) + parseFloat(((this.rangePercentageHigh - this.rangePercentage) / 10.00));
+						log.dev(`To new value this.rangePercentage: ${this.rangePercentage}`);
+					}
+				}
+
+				await this.cancelOrders().catch((error) =>
+				{
+					log.error(`Error Canceling orders`);
+					log.error(error);
+				});
+				break;
+			case (2):
+				log.debug(`Waiting for transaction to occur. No action to perform`);
+				break;
+			default:
+				log.error(`Error: This state should never occur. You may have additional orders placed.`);
+				this.stop();
+				break;
 		}
 
 		setTimeout(() =>

@@ -19,7 +19,25 @@ export default class Versioning
 
 	async increment()
 	{
-		const newVersion = removeLastInteger(this.version) + String(getLastInteger(this.version) + 1);
+		const versionNumberArray = this.version.match(/\d+$/g);
+		console.log(versionNumberArray);
+
+		const versionNumberString = versionNumberArray[0];
+		console.log(versionNumberString);
+
+		const base = this.version.replace(versionNumberString, "");
+
+		const versionNumber = parseInt(versionNumberString);
+		console.log(versionNumber);
+
+		const newVersionNumber = versionNumber + 1;
+		console.log(newVersionNumber);
+
+		const newVersionNumberString = String(newVersionNumber);
+		console.log(newVersionNumberString);
+
+		const result = base + newVersionNumberString;
+		console.log(result);
 
 		for (let i = 0; i < this.files.length; i++)
 		{

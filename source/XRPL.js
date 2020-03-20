@@ -22,7 +22,7 @@ const options =
 	*/
 	server: mainNet,	//	uri string	Optional URI for rippled websocket port to connect to. Must start with wss://, ws://, wss+unix://, or ws+unix://.
 	feeCushion: 1.2,		//	number	Optional Factor to multiply estimated fee by to provide a cushion in case the required fee rises during submission of a transaction. Defaults to 1.2.
-	maxFeeXRP: `0.00001`,	//	string	Optional Maximum fee to use with transactions, in XRP. Must be a string-encoded number. Defaults to '2'.
+	maxFeeXRP: `0.001`,	//	string	Optional Maximum fee to use with transactions, in XRP. Must be a string-encoded number. Defaults to '2'.
 	timeout: 30000,	//	integer	Optional Timeout in milliseconds before considering a request to have failed.
 	//trace: true	//	boolean	Optional If true, log rippled requests and responses to stdout.
 };
@@ -56,10 +56,10 @@ async function connect()
 	}
 	else
 	{
-		return await API.connect().then(() => 
+		return await API.connect().then(() =>
 		{
 			//console.log(`Ripple API connected`);
-		}).catch((error) => 
+		}).catch((error) =>
 		{
 			console.error(error);
 			throw new Error(error);
@@ -102,7 +102,7 @@ function verifyTransaction(hash, options)
 		console.log(`Validated in Ledger: `, data.outcome.ledgerVersion);
 		console.log(`Sequence: `, data.sequence);
 		return data.outcome.result === `tesSUCCESS`;
-	}).then(() => 
+	}).then(() =>
 	{
 		return hash;
 	}).catch(error =>
@@ -130,10 +130,10 @@ async function disconnect()
 	}
 	else
 	{
-		await API.disconnect().then(() => 
+		await API.disconnect().then(() =>
 		{
 			console.log(`Ripple API disconnected`);
-		}).catch((error) => 
+		}).catch((error) =>
 		{
 			console.error(error);
 			throw new Error(error);
@@ -151,7 +151,7 @@ export default class XRPL
 
 	static calculateNumber(f, ...args)
 	{
-		const numbers = args.map((arg) => 
+		const numbers = args.map((arg) =>
 		{
 			if (typeof (arg) == `string`)
 			{
@@ -239,7 +239,7 @@ export default class XRPL
 
 		const ledgerVersion = await API.getLedgerVersion();
 
-		return await submitTransaction(ledgerVersion, prepared, secret).catch((error) => 
+		return await submitTransaction(ledgerVersion, prepared, secret).catch((error) =>
 		{
 			log.error(error);
 		});
@@ -262,9 +262,9 @@ export default class XRPL
 
 	/**
 	 * @param {string} address
-	 * @param {import("ripple-lib/dist/npm/common/types/objects").Amount} buyAsset 
-	 * @param {import("ripple-lib/dist/npm/common/types/objects").Amount} costAsset 
-	 * @param {import("ripple-lib/dist/npm/common/types/objects").Memo[]} [memos] 
+	 * @param {import("ripple-lib/dist/npm/common/types/objects").Amount} buyAsset
+	 * @param {import("ripple-lib/dist/npm/common/types/objects").Amount} costAsset
+	 * @param {import("ripple-lib/dist/npm/common/types/objects").Memo[]} [memos]
 	 */
 	async buy(address, secret, buyAsset, costAsset, memos)
 	{
@@ -289,9 +289,9 @@ export default class XRPL
 
 	/**
 	 * @param {string} address
-	 * @param {import("ripple-lib/dist/npm/common/types/objects").Amount} sellAsset 
-	 * @param {import("ripple-lib/dist/npm/common/types/objects").Amount} costAsset 
-	 * @param {import("ripple-lib/dist/npm/common/types/objects").Memo[]} [memos] 
+	 * @param {import("ripple-lib/dist/npm/common/types/objects").Amount} sellAsset
+	 * @param {import("ripple-lib/dist/npm/common/types/objects").Amount} costAsset
+	 * @param {import("ripple-lib/dist/npm/common/types/objects").Memo[]} [memos]
 	 */
 	async sell(address, secret, sellAsset, costAsset, memos)
 	{

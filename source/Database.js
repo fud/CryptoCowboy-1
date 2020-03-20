@@ -2,6 +2,13 @@ import sqlite3Module from "sqlite3";
 //https://github.com/sqlcipher/sqlcipher
 const sqlite3 = sqlite3Module.verbose();
 
+import fs from "fs";
+const directory = `database`;
+if (!fs.existsSync(directory))
+{
+	fs.mkdirSync(directory);
+}
+
 const databaseFile = `./database/cryptocowboy.db`;
 
 const database = new sqlite3.Database(databaseFile, (err) =>
@@ -14,7 +21,7 @@ const database = new sqlite3.Database(databaseFile, (err) =>
 
 function close()
 {
-	database.close((error) => 
+	database.close((error) =>
 	{
 		if (error)
 		{
@@ -43,7 +50,7 @@ export default class Database
 	{
 		return new Promise((resolve, reject) =>
 		{
-			args.push((result, error) => 
+			args.push((result, error) =>
 			{
 				if (error)
 				{
@@ -52,11 +59,11 @@ export default class Database
 				resolve(result);
 			});
 
-			database.serialize(() => 
+			database.serialize(() =>
 			{
 				database.run.apply(database, args);
 			});
-		}).catch((error) => 
+		}).catch((error) =>
 		{
 			console.error(error);
 		});
@@ -67,7 +74,7 @@ export default class Database
 		const columnString = csvString(columns);
 		const query = `CREATE TABLE IF NOT EXISTS ${tableName}(${columnString})`;
 
-		return this.execute(query).then((result) => 
+		return this.execute(query).then((result) =>
 		{
 			console.log(`Created new table! ${tableName}`);
 			return result;
@@ -101,7 +108,7 @@ export default class Database
 		return new Promise((resolve, reject) =>
 		{
 			const rows = [];
-			database.serialize(() => 
+			database.serialize(() =>
 			{
 				database.each(`SELECT ${columnString} FROM ${table}`, (error, row) =>
 				{
@@ -114,13 +121,13 @@ export default class Database
 						rows.push(row);
 					}
 				},
-				(error, n) => 
+				(error, n) =>
 				{
-					if (error) 
+					if (error)
 					{
 						reject(error);
 					}
-					else 
+					else
 					{
 						resolve(rows);
 					}
@@ -144,15 +151,15 @@ export default class Database
 
 	async addColumn(table, column)
 	{
-		try 
+		try
 		{
 			await this.columnExists(table, column);
 			console.log(`Column ${column} exists in table ${table}`);
 			const query = `ALTER TABLE ${table} ADD COLUMN ${column}`;
 			await this.execute(query);
 			return true;
-		} 
-		catch (error) 
+		}
+		catch (error)
 		{
 			console.log(`Column ${column} does not exist in table ${table}, adding it.`);
 			return false;
@@ -165,7 +172,7 @@ export default class Database
 		const rowKeys = Object.keys(rowObject);
 		const rowKeyString = csvString(rowKeys);
 
-		const rowValues = rowKeys.map((key) => 
+		const rowValues = rowKeys.map((key) =>
 		{
 			return rowObject[key];
 		});
@@ -180,7 +187,7 @@ export default class Database
 	async removeTable(table)
 	{
 		const query = `DROP TABLE IF EXISTS ${table}`;
-		//database.serialize(() => 
+		//database.serialize(() =>
 		//{
 		//	database.run(query);
 		//});
@@ -191,7 +198,7 @@ export default class Database
 	async renameTable(oldTable, newTable)
 	{
 		const query = `ALTER TABLE ${oldTable} RENAME TO ${newTable}`;
-		database.serialize(() => 
+		database.serialize(() =>
 		{
 			database.run(query);
 		});
@@ -206,7 +213,7 @@ export default class Database
 			return;
 		}
 		const oldRowKeys = Object.keys(oldTable[0]);
-		const rowKeys = oldRowKeys.map((rowKey) => 
+		const rowKeys = oldRowKeys.map((rowKey) =>
 		{
 			if (rowKey == oldColumn)
 			{

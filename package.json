@@ -1,6 +1,6 @@
 {
   "name": "computercowboy",
-  "version": "v2.0.0-alpha.11",
+  "version": "v2.0.0-alpha.13",
   "description": "Digital Asset Management Suite",
   "main": "./CryptoCowboy.js",
   "type": "module",
