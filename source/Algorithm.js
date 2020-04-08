@@ -29,6 +29,7 @@ const _sellOrder = new Map();
 const _inflectionPoint = new Map();
 const _rangePercentage = new Map();
 
+const saturatedPercent = 0.50;
 
 export default class Algorithm
 {
@@ -402,6 +403,13 @@ export default class Algorithm
 				else
 				{
 					log.dev(`Changing this.inflectionPoint: ${this.inflectionPoint}`);
+					const saturatedPoint = (this.inflectionPoint * saturatedPercent);
+					if(this.primeAsset.value > saturatedPoint)
+					{
+						const saturated = (this.primeAsset.value - saturatedPoint) / 10;
+						this.inflectionPoint += saturated;
+					}
+					
 					this.inflectionPoint = parseFloat(this.inflectionPoint) + parseFloat((this.range.number * (this.rangePercentage / 100.00) * 0.50));
 					log.dev(`To new value this.inflectionPoint: ${this.inflectionPoint}`);
 				}
